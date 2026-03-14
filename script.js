@@ -4,6 +4,170 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
+    /* --- 0. Floating Cube Background Generator --- */
+    const cubeBg = document.getElementById('cube-bg');
+    const heroSection = document.getElementById('hero');
+    const CUBE_COUNT = 18;
+
+    // Spawn cubes into the container
+    if (cubeBg) {
+        for (let i = 0; i < CUBE_COUNT; i++) {
+            const cube = document.createElement('span');
+            cube.classList.add('cube');
+
+            // Randomise: size (20px – 90px), x position, animation duration & delay
+            const size    = Math.random() * 70 + 20;          // 20 – 90 px
+            const leftPos = Math.random() * 100;               // 0 – 100 vw
+            // Start cubes at various heights across the full page
+            const startTop = Math.random() * 200 + 100;       // 100vh – 300vh from top
+            const duration = Math.random() * 30 + 20;         // 20 – 50 s (slow!)
+            const delay    = Math.random() * -40;              // stagger so not all start at once
+
+            cube.style.cssText = `
+                width: ${size}px;
+                height: ${size}px;
+                left: ${leftPos}vw;
+                top: ${startTop}vh;
+                animation-duration: ${duration}s;
+                animation-delay: ${delay}s;
+            `;
+
+            cubeBg.appendChild(cube);
+        }
+
+        // Show cube-bg only when user scrolls past the hero section
+        function updateCubeVisibility() {
+            const heroBottom = heroSection ? heroSection.getBoundingClientRect().bottom : 0;
+            cubeBg.style.opacity = heroBottom <= 0 ? '1' : '0';
+        }
+
+        cubeBg.style.opacity = '0';
+        cubeBg.style.transition = 'opacity 0.8s ease';
+        window.addEventListener('scroll', updateCubeVisibility, { passive: true });
+    }
+
+    /* --- 0b. Hero Particle Canvas --- */
+    const canvas = document.getElementById('particle-canvas');
+    if (canvas && window.matchMedia("(prefers-reduced-motion: no-preference)").matches) {
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const PARTICLE_COUNT = 60;
+
+        function resizeCanvas() {
+            canvas.width  = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Particle constructor
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x    = Math.random() * canvas.width;
+                this.y    = Math.random() * canvas.height;
+                this.vx   = (Math.random() - 0.5) * 0.4;
+                this.vy   = (Math.random() - 0.5) * 0.4;
+                this.size = Math.random() * 2 + 0.5;
+                this.alpha = Math.random() * 0.5 + 0.2;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                // Bounce off edges
+                if (this.x < 0 || this.x > canvas.width)  this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height)  this.vy *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+                ctx.fill();
+            }
+        }
+
+        // Initialise particles
+        for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+
+        function drawConnections() {
+            for (let a = 0; a < particles.length; a++) {
+                for (let b = a + 1; b < particles.length; b++) {
+                    const dx   = particles[a].x - particles[b].x;
+                    const dy   = particles[a].y - particles[b].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(255, 107, 0, ${0.15 * (1 - dist / 120)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[a].x, particles[a].y);
+                        ctx.lineTo(particles[b].x, particles[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            drawConnections();
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+    }
+
+    /* --- 0c. Animated Counter Numbers --- */
+    const statNumbers = document.querySelectorAll('.stat-number');
+
+    function animateCounter(el) {
+        const target   = parseInt(el.getAttribute('data-target'));
+        const duration = 2000; // ms
+        const step     = target / (duration / 16); // ~60fps
+        let current    = 0;
+
+        const timer = setInterval(() => {
+            current += step;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+            el.textContent = Math.floor(current);
+        }, 16);
+    }
+
+    // Trigger counters when stats section scrolls into view
+    const statsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                statNumbers.forEach(animateCounter);
+                statsObserver.disconnect(); // Only trigger once
+            }
+        });
+    }, { threshold: 0.3 });
+
+    const statsSection = document.querySelector('.stats-section');
+    if (statsSection) statsObserver.observe(statsSection);
+
+    /* --- 0d. 3D Card Tilt Effect --- */
+    const tiltCards = document.querySelectorAll('.glass-card');
+    tiltCards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect   = card.getBoundingClientRect();
+            const x      = e.clientX - rect.left; // mouse X inside card
+            const y      = e.clientY - rect.top;  // mouse Y inside card
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = ((y - centerY) / centerY) * -8; // max 8deg
+            const rotateY = ((x - centerX) / centerX) * 8;
+
+            card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) translateY(0)';
+        });
+    });
+
     /* --- 1. Custom Animated Cursor --- */
     const dot = document.querySelector('.cursor-dot');
     const outline = document.querySelector('.cursor-outline');

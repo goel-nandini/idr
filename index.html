@@ -39,6 +39,7 @@
 
     <!-- Animated Background for Hero -->
     <div class="hero-bg">
+        <canvas id="particle-canvas"></canvas>
         <div class="gradient-sphere sphere-1"></div>
         <div class="gradient-sphere sphere-2"></div>
         <div class="grid-overlay"></div>
@@ -57,6 +58,9 @@
         </div>
     </section>
 
+    <!-- Floating Cubes Background (all sections except hero) -->
+    <div id="cube-bg" aria-hidden="true"></div>
+
     <!-- About Section -->
     <section id="about" class="section about">
         <div class="container scroll-animate fade-up">
@@ -68,6 +72,59 @@
             </div>
         </div>
     </section>
+
+    <!-- Stats Counter Section -->
+    <section class="section stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item scroll-animate fade-up" style="--delay:0.1s">
+                    <h3 class="stat-number" data-target="500">0</h3>
+                    <p class="stat-suffix">+</p>
+                    <span class="stat-label">Professionals Trained</span>
+                </div>
+                <div class="stat-item scroll-animate fade-up" style="--delay:0.2s">
+                    <h3 class="stat-number" data-target="40">0</h3>
+                    <p class="stat-suffix">+</p>
+                    <span class="stat-label">Partner Organisations</span>
+                </div>
+                <div class="stat-item scroll-animate fade-up" style="--delay:0.3s">
+                    <h3 class="stat-number" data-target="15">0</h3>
+                    <p class="stat-suffix">+</p>
+                    <span class="stat-label">Research Programs</span>
+                </div>
+                <div class="stat-item scroll-animate fade-up" style="--delay:0.4s">
+                    <h3 class="stat-number" data-target="98">0</h3>
+                    <p class="stat-suffix">%</p>
+                    <span class="stat-label">Placement Rate</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marquee Strip -->
+    <div class="marquee-strip" aria-hidden="true">
+        <div class="marquee-track">
+            <span>Cyber Risk</span><span class="dot">&#9679;</span>
+            <span>AI Governance</span><span class="dot">&#9679;</span>
+            <span>ISO 27001</span><span class="dot">&#9679;</span>
+            <span>NIST Framework</span><span class="dot">&#9679;</span>
+            <span>Digital Resilience</span><span class="dot">&#9679;</span>
+            <span>NIS2 Compliance</span><span class="dot">&#9679;</span>
+            <span>Technology Risk</span><span class="dot">&#9679;</span>
+            <span>Data Privacy</span><span class="dot">&#9679;</span>
+            <span>Security Assurance</span><span class="dot">&#9679;</span>
+            <!-- Duplicate for seamless loop -->
+            <span>Cyber Risk</span><span class="dot">&#9679;</span>
+            <span>AI Governance</span><span class="dot">&#9679;</span>
+            <span>ISO 27001</span><span class="dot">&#9679;</span>
+            <span>NIST Framework</span><span class="dot">&#9679;</span>
+            <span>Digital Resilience</span><span class="dot">&#9679;</span>
+            <span>NIS2 Compliance</span><span class="dot">&#9679;</span>
+            <span>Technology Risk</span><span class="dot">&#9679;</span>
+            <span>Data Privacy</span><span class="dot">&#9679;</span>
+            <span>Security Assurance</span><span class="dot">&#9679;</span>
+        </div>
+    </div>
 
     <!-- Services / Pillars Section -->
     <section id="services" class="section services">
